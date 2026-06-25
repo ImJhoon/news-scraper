@@ -63,3 +63,17 @@
 - **주요 구성**:
   - `httpClient`: 기본 제공되는 `java.net.http.HttpClient`를 활용하여 네트워크 요청을 관리합니다.
   - `endPoint`: 뉴스 수집을 요청할 타겟 URL(엔드포인트)을 생성자를 통해 주입받아 사용합니다.
+
+### 3.2 `NaverNewsProvider` (네이버 API 연동 구현체)
+- **위치**: `src/oop/search/infrastructure/NaverNewsProvider.java`
+- **특징**: `AbstractHttpScraper`를 상속받아 네이버 Open API를 통해 뉴스를 검색하는 **구체 클래스(Concrete Class)**입니다.
+- **주요 구현 방식**:
+  - `NEWS_API_URL` 상수를 통해 네이버 뉴스 검색 API 엔드포인트를 지정합니다.
+  - 보안 정보(`clientId`, `clientSecret`)와 기본 검색 설정(`category`)을 하드코딩하지 않고 **환경 변수(`System.getenv`)**에서 읽어와 주입하도록 구현하여 보안성과 유연성을 높였습니다.
+
+## 4. 환경 및 설정 파일 (Configuration)
+API 키와 같은 민감한 정보 및 개인별 설정 환경을 관리하기 위한 구조를 추가했습니다.
+
+### 4.1 `.env` & `.env.sample` (환경 변수 파일)
+- **`.env.sample`**: 프로젝트 실행에 필요한 환경 변수(예: `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `NEWS_CATEGORY`)의 양식을 정의한 템플릿입니다.
+- **`.gitignore` 설정**: 실제 비밀키가 담긴 `.env` 파일이 Git 저장소에 커밋되는 것을 방지하기 위해 `.gitignore`에 `.env`를 추가했습니다.
