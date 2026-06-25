@@ -49,7 +49,7 @@ jobs:
       - name: 뉴스 이슈 생성
         run: |
           echo "뉴스 수집 및 이슈 생성 시작..."
-          java -cp out oop.scraper.presentation.GitHubNewsApp
+          java -cp out oop.search.presentation.GitHubNewsApp
           echo "이슈 생성 작업 종료"
         env:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
@@ -58,3 +58,4 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }} # 자동으로 들어가는 값 2
           NEWS_QUERY: ${{ vars.NEWS_QUERY }}
           NEWS_DISPLAY: ${{ vars.NEWS_DISPLAY }}
+          NEWS_CATEGORY: ${{ vars.NEWS_CATEGORY}}
