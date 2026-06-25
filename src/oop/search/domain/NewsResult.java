@@ -14,9 +14,4 @@ public record NewsResult(
         String description,
         String url,
         String pubDate
-) {
-    public static void main(String[] args) {
-        NewsResult result = new NewsResult("환율 1600원 돌파 가능성?", "현재 1550원 간당간당...", "https://naver.com", "2026.06.25");
-        System.out.println("result = " + result);
-    }
-}
+) {}

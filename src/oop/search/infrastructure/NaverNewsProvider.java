@@ -10,10 +10,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class NaverNewsProvider extends AbstractHttpScraper {
+public class NaverNewsProvider extends AbstractHttpClient implements NewsProvider {
 
     // 생성자 레벨에서 사용할 상수는 static
     private static final String NEWS_API_URL = "https://openapi.naver.com/v1/search/news.json";
