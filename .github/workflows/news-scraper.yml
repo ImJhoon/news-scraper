@@ -59,3 +59,4 @@ jobs:
           NEWS_QUERY: ${{ vars.NEWS_QUERY }}
           NEWS_DISPLAY: ${{ vars.NEWS_DISPLAY }}
           NEWS_CATEGORY: ${{ vars.NEWS_CATEGORY}}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

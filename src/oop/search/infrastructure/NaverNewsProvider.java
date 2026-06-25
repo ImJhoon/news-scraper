@@ -21,12 +21,14 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
     private final String clientId;
     private final String clientSecret;
     private final NewsCategory category;
+    private final GeminiSummarizer geminiSummarizer;
 
     // clientId, clientSecret, category
     public NaverNewsProvider() {
         super(NEWS_API_URL);
         this.clientId = System.getenv("NAVER_CLIENT_ID");
         this.clientSecret = System.getenv("NAVER_CLIENT_SECRET");
+        this.geminiSummarizer = new GeminiSummarizer();
         
         if (this.clientId == null || this.clientSecret == null) {
             System.err.println("[경고] API 키가 설정되지 않았습니다. 환경 변수를 확인해주세요.");
@@ -64,18 +66,12 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
                     HttpResponse.BodyHandlers.ofString()
             );
             String body = response.body();
-            System.out.println("body = " + body);
             
             // items 
             String items = body.split("items")[1];
-            // <- items -> 
-            System.out.println("items = " + items);
             String[] itemArr = items.split("},");
             
             for (String item : itemArr) {
-//                String title = item
-//                        .split("\"title\":\"")[1]
-//                        .split("\",")[0];
                 String title = cutText(item, "\"title\":\"", "\",");
                 String link = cutText(item, "\"link\":\"", "\",");
                 String description = cutText(item, "\"description\":\"", "\",");
@@ -84,10 +80,17 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
                 // JSON에서 URL의 \/ 를 / 로 이스케이프 해제
                 String cleanLink = link.replace("\\/", "/");
                 
-                // 기사 원문에 접속하여 OG Image 태그 썸네일 추출
-                String imageUrl = extractOgImage(cleanLink);
+                // 기사 원문에 접속하여 메타데이터(썸네일, 전체 텍스트) 추출
+                ArticleMetadata meta = extractMetadata(cleanLink);
+                String imageUrl = meta.imageUrl();
+                
+                // 텍스트를 바탕으로 AI 요약 시도
+                String aiSummary = geminiSummarizer.summarize(meta.fullText());
+                
+                // 요약이 성공했다면 그것을 쓰고, 실패했다면 네이버 기본 요약(description)을 그대로 씁니다.
+                String finalDescription = aiSummary.isEmpty() ? description : "✨ **[AI 3줄 요약]**\\n" + aiSummary;
 
-                NewsResult result = new NewsResult(title, description, cleanLink, pubDate, imageUrl);
+                NewsResult result = new NewsResult(title, finalDescription, cleanLink, pubDate, imageUrl);
                 results.add(result);
             }
             
@@ -105,7 +108,9 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
                 .split(suffix)[0];
     }
 
-    private String extractOgImage(String articleUrl) {
+    private record ArticleMetadata(String imageUrl, String fullText) {}
+
+    private ArticleMetadata extractMetadata(String articleUrl) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -115,17 +120,29 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             String html = response.body();
             
-            // <meta property="og:image" content="..."> 찾기
+            String imageUrl = "";
             if (html.contains("og:image")) {
                 String ogImagePart = html.split("og:image")[1];
                 if (ogImagePart.contains("content=\"")) {
-                    return ogImagePart.split("content=\"")[1].split("\"")[0];
+                    imageUrl = ogImagePart.split("content=\"")[1].split("\"")[0];
                 }
             }
+            
+            // 기사 원문 텍스트 추출 (순수 자바 정규식 기반)
+            // 1. <style>, <script> 태그 및 내용 완벽 제거 (줄바꿈 포함 매칭을 위해 (?s) 사용)
+            String text = html.replaceAll("(?s)<style[^>]*>.*?</style>", "")
+                              .replaceAll("(?s)<script[^>]*>.*?</script>", "")
+                              // 2. 나머지 모든 HTML 태그를 공백으로 치환
+                              .replaceAll("<[^>]*>", " ")
+                              // 3. 여러 개의 공백이나 줄바꿈을 하나의 공백으로 압축
+                              .replaceAll("\\s+", " ")
+                              .trim();
+                              
+            return new ArticleMetadata(imageUrl, text);
         } catch (Exception e) {
-            // 통신 실패나 파싱 에러 시 빈 문자열 반환 (썸네일 없이 진행)
+            // 실패 시 빈 값 반환
         }
-        return "";
+        return new ArticleMetadata("", "");
     }
 
     public static void main(String[] args) {
