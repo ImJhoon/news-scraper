@@ -80,7 +80,7 @@
 
 ### 4.4 `GitHubNewsPublisher` (GitHub Issue 발행 구현체)
 * **어떤 파일인가요?**: 수집된 뉴스 데이터를 GitHub 저장소의 새로운 이슈(Issue)로 등록해주는 기능입니다.
-* **특징**: 마크다운 테이블(표) 형태를 지원하며, 내부 헬퍼 메서드(`cleanTextForJson`)를 통해 HTML 태그 제거 및 JSON 문법 에러(이스케이프 처리)를 방어합니다.
+* **특징**: 가독성이 뛰어난 카드형 인용구(Blockquote) 구조를 지원하며, 내부 헬퍼 메서드(`cleanTextForJson`)를 통해 HTML 태그 제거 및 JSON 문법 에러(이스케이프 처리)를 방어합니다.
 
 ---
 

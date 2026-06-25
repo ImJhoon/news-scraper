@@ -31,23 +31,16 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
         StringBuilder bodyBuilder = new StringBuilder();
         bodyBuilder.append("## \uD83D\uDCF0 ").append(topic).append(" 뉴스 검색 결과\\n\\n");
         
-        // 마크다운 테이블 헤더 추가
-        bodyBuilder.append("| 번호 | 뉴스 제목 | 요약 내용 | 링크 |\\n");
-        bodyBuilder.append("| :---: | :--- | :--- | :---: |\\n");
-        
         int index = 1;
         for (NewsResult result : newsResults) {
             String title = cleanTextForJson(result.title());
             String desc = cleanTextForJson(result.description());
             
-            // 본문에 파이프(|) 기호가 있으면 표가 깨지므로 안전하게 치환
-            title = title.replace("|", "&#124;");
-            desc = desc.replace("|", "&#124;");
-            
-            bodyBuilder.append(String.format("| %d | **%s** | %s | [보러가기](%s) |\\n", 
-                    index++, title, desc, result.url()));
+            bodyBuilder.append(String.format("### %d. %s\\n", index++, title));
+            bodyBuilder.append(String.format("> %s\\n> \\n", desc));
+            bodyBuilder.append(String.format("> 👉 **[기사 원문 보러가기](%s)**\\n\\n", result.url()));
+            bodyBuilder.append("---\\n\\n");
         }
-        bodyBuilder.append("\\n");
 
         String payload = """
                 {
