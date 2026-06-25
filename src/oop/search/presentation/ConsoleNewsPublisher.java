@@ -1,4 +1,4 @@
-package oop.search.infrastructure;
+package oop.search.presentation;
 
 import oop.search.application.NewsPublisher;
 import oop.search.domain.NewsResult;
