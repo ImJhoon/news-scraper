@@ -4,6 +4,11 @@ import oop.search.application.NewsProvider;
 import oop.search.domain.NewsCategory;
 import oop.search.domain.NewsResult;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class NaverNewsProvider extends AbstractHttpScraper {
@@ -30,12 +35,34 @@ public class NaverNewsProvider extends AbstractHttpScraper {
 
     @Override
     public List<NewsResult> fetchNews(String searchQuery, int limit) {
+        String url = endPoint + "?query="
+                + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8)
+                + "&display" + limit
+                + "&sort=" + category.getQueryValue()
+                + "&start=1";
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .header("X-Naver-Client-Id", clientId)
+                .header("X-Naver-Client-Secret", clientSecret)
+                .build();
+        try {
+            HttpResponse<String> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+            String body = response.body();
+            System.out.println("body = " + body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return List.of();
     }
 
     public static void main(String[] args) {
         NewsProvider provider = new NaverNewsProvider();
-        List<NewsResult> results = provider.fetchNews("코덱스", 10);
+        List<NewsResult> results = provider.fetchNews("북중미 월드컵 한국", 10);
         System.out.println("results = " + results);
     }
 }

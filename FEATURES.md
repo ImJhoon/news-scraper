@@ -70,7 +70,11 @@
 - **주요 구현 방식**:
   - `NEWS_API_URL` 상수를 통해 네이버 뉴스 검색 API 엔드포인트를 지정합니다.
   - 보안 정보(`clientId`, `clientSecret`)와 기본 검색 설정(`category`)을 하드코딩하지 않고 **환경 변수(`System.getenv`)**에서 읽어와 주입하도록 구현하여 보안성과 유연성을 높였습니다.
-
+  - `fetchNews` 메서드 재정의를 통해 다음을 수행합니다:
+    - `URLEncoder.encode`를 사용해 한글 검색어를 안전하게 인코딩합니다.
+    - 검색 쿼리 파라미터(`query`, `display`, `sort`, `start`)를 조립하여 최종 호출 URL을 생성합니다.
+    - `HttpRequest.newBuilder()`를 사용하여 GET 요청을 생성하고, `.header()` 메서드로 API 인증에 필수적인 `X-Naver-Client-Id`와 `X-Naver-Client-Secret` 헤더를 포함시킵니다.
+    - `httpClient.send()`로 실제 API 호출 후 반환된 JSON 응답(body)을 받아옵니다.
 ## 4. 환경 및 설정 파일 (Configuration)
 API 키와 같은 민감한 정보 및 개인별 설정 환경을 관리하기 위한 구조를 추가했습니다.
 
