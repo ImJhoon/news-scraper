@@ -55,8 +55,8 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
                 "body": "%s"
                 }
                 """.formatted(
-                // %s -> topic. %s -> 한국기준 현재 시간
-                "%s (%s)".formatted(topic, ZonedDateTime.now(ZoneId.of("Asia/Seoul"))),
+                // %s -> topic. %s -> 한국기준 현재 시간 (일자까지만)
+                "%s (%s)".formatted(topic, java.time.LocalDate.now(ZoneId.of("Asia/Seoul"))),
                 bodyBuilder.toString()
         ).trim();
         HttpRequest request = HttpRequest.newBuilder()
