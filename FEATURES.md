@@ -75,5 +75,5 @@
 API 키와 같은 민감한 정보 및 개인별 설정 환경을 관리하기 위한 구조를 추가했습니다.
 
 ### 4.1 `.env` & `.env.sample` (환경 변수 파일)
-- **`.env.sample`**: 프로젝트 실행에 필요한 환경 변수(예: `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `NEWS_CATEGORY`)의 양식을 정의한 템플릿입니다.
+- **`.env.sample`**: 프로젝트 실행에 필요한 환경 변수(예: `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `NEWS_CATEGORY`)의 양식을 정의한 템플릿입니다. 실제 값이 노출되지 않도록 `******` 등과 같은 마스킹(자리표시자)을 추가해 두었습니다.
 - **`.gitignore` 설정**: 실제 비밀키가 담긴 `.env` 파일이 Git 저장소에 커밋되는 것을 방지하기 위해 `.gitignore`에 `.env`를 추가했습니다.
