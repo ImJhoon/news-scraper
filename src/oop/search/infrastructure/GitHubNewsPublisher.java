@@ -26,8 +26,19 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
 
     @Override
     public void publish(String topic, List<NewsResult> newsResults) {
-//        httpClient
         String url = endPoint;
+        
+        StringBuilder bodyBuilder = new StringBuilder();
+        bodyBuilder.append("## \uD83D\uDCF0 ").append(topic).append(" 뉴스 검색 결과\\n\\n");
+        
+        for (NewsResult result : newsResults) {
+            String title = cleanTextForJson(result.title());
+            String desc = cleanTextForJson(result.description());
+            
+            bodyBuilder.append(String.format("### [%s](%s)\\n", title, result.url()));
+            bodyBuilder.append(String.format("> %s\\n\\n", desc));
+        }
+
         String payload = """
                 {
                 "title": "%s",
@@ -36,7 +47,7 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
                 """.formatted(
                 // %s -> topic. %s -> 한국기준 현재 시간
                 "%s (%s)".formatted(topic, ZonedDateTime.now(ZoneId.of("Asia/Seoul"))),
-                newsResults
+                bodyBuilder.toString()
         ).trim();
         HttpRequest request = HttpRequest.newBuilder()
 //                .GET()
@@ -58,5 +69,14 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String cleanTextForJson(String text) {
+        if (text == null) return "";
+        return text.replaceAll("<[^>]*>", "") // HTML 태그 제거 (<b> 등)
+                   .replace("&quot;", "'")    // HTML 엔티티 변경
+                   .replace("\"", "\\\"")     // JSON 큰따옴표 이스케이프
+                   .replace("\n", " ")        // 줄바꿈 제거 (한 줄로)
+                   .replace("\r", "");
     }
 }
