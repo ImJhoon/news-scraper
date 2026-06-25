@@ -28,10 +28,18 @@ public class NaverNewsProvider extends AbstractHttpScraper {
         super(NEWS_API_URL);
         this.clientId = System.getenv("NAVER_CLIENT_ID");
         this.clientSecret = System.getenv("NAVER_CLIENT_SECRET");
-        this.category = NewsCategory.valueOf(System.getenv("NEWS_CATEGORY"));
+        
+        if (this.clientId == null || this.clientSecret == null) {
+            System.err.println("[경고] API 키가 설정되지 않았습니다. 환경 변수를 확인해주세요.");
+        }
+
+        String categoryEnv = System.getenv("NEWS_CATEGORY");
+        this.category = categoryEnv != null ? NewsCategory.valueOf(categoryEnv) : NewsCategory.SIM;
         // SIM, DATE -> 변환 (Enum - NewsCategory.SIM, NewsCategory.DATE)
-        System.out.println("clientId = " + clientId.substring(0, 3) + "...");
-        System.out.println("clientSecret = " + clientSecret.substring(0, 3) + "...");
+        if (this.clientId != null && this.clientSecret != null) {
+            System.out.println("clientId = " + clientId.substring(0, Math.min(clientId.length(), 3)) + "...");
+            System.out.println("clientSecret = " + clientSecret.substring(0, Math.min(clientSecret.length(), 3)) + "...");
+        }
         System.out.println("category = " + category);
     }
 
