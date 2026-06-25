@@ -39,7 +39,8 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
             
             bodyBuilder.append(String.format("### %d. %s\\n", index++, title));
             if (imgUrl != null && !imgUrl.isEmpty()) {
-                bodyBuilder.append(String.format("> ![썸네일](%s)\\n> \\n", imgUrl));
+                // 마크다운 문법 대신 HTML img 태그를 사용하여 너비를 300픽셀로 제한합니다.
+                bodyBuilder.append(String.format("> <img src=\"%s\" width=\"300\">\\n> \\n", imgUrl));
             }
             bodyBuilder.append(String.format("> %s\\n> \\n", desc));
             bodyBuilder.append(String.format("> 👉 **[기사 원문 보러가기](%s)**\\n\\n", result.url()));
