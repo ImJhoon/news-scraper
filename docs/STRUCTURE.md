@@ -32,21 +32,15 @@ graph TD
     
     %% 인프라스트럭처 계층
     OOP --> Infra["infrastructure/ (외부 통신 및 기술)"]
-    Infra --> AbstractHttpScraper["AbstractHttpScraper.java"]
+    Infra --> AbstractHttpClient["AbstractHttpClient.java"]
     Infra --> NaverNewsProvider["NaverNewsProvider.java"]
+    Infra --> GitHubNewsPublisher["GitHubNewsPublisher.java"]
     
     %% 프레젠테이션 계층
     OOP --> Presentation["presentation/ (사용자 인터페이스)"]
     Presentation --> ConsoleNewsApp["ConsoleNewsApp.java"]
     Presentation --> ConsoleNewsPublisher["ConsoleNewsPublisher.java"]
-    
-    %% 스타일링
-    style Root fill:#f9f,stroke:#333,stroke-width:2px
-    style Domain fill:#bbf,stroke:#333,stroke-width:2px
-    style App fill:#bbf,stroke:#333,stroke-width:2px
-    style Infra fill:#bbf,stroke:#333,stroke-width:2px
-    style Presentation fill:#bbf,stroke:#333,stroke-width:2px
-    style Docs fill:#bfb,stroke:#333,stroke-width:2px
+    Presentation --> GitHubNewsApp["GitHubNewsApp.java"]
 ```
 
 ## 계층(Layer) 요약 설명
