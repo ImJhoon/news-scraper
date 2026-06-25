@@ -9,7 +9,7 @@ public class GeminiSummarizer extends AbstractHttpClient {
 
     public GeminiSummarizer() {
         // Gemini 1.5 Flash 모델 엔드포인트
-        super("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent");
+        super("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent");
         this.apiKey = System.getenv("GEMINI_API_KEY");
     }
 
