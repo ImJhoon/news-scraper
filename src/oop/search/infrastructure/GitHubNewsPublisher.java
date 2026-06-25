@@ -40,10 +40,10 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
             bodyBuilder.append(String.format("### %d. %s\\n", index++, title));
             if (imgUrl != null && !imgUrl.isEmpty()) {
                 // 마크다운 문법 대신 HTML img 태그를 사용하되, JSON 문법 충돌을 피하기 위해 작은따옴표(') 사용
-                bodyBuilder.append(String.format("> <img src='%s' width='300'>\\n> \\n", imgUrl));
+                bodyBuilder.append(String.format("<img src='%s' width='300'>\\n\\n", imgUrl));
             }
-            bodyBuilder.append(String.format("> %s\\n> \\n", desc));
-            bodyBuilder.append(String.format("> 👉 **[기사 원문 보러가기](%s)**\\n\\n", result.url()));
+            bodyBuilder.append(String.format("%s\\n\\n", desc));
+            bodyBuilder.append(String.format("👉 **[기사 원문 보러가기](%s)**\\n\\n", result.url()));
             bodyBuilder.append("---\\n\\n");
         }
 
@@ -84,7 +84,7 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
         return text.replaceAll("<[^>]*>", "") // HTML 태그 제거 (<b> 등)
                    .replace("&quot;", "'")    // HTML 엔티티 변경
                    .replace("\"", "\\\"")     // JSON 큰따옴표 이스케이프
-                   .replace("\n", " ")        // 줄바꿈 제거 (한 줄로)
+                   .replace("\n", "\\n")      // 줄바꿈 기호를 JSON용 개행 문자(\\n)로 변환하여 리스트 유지
                    .replace("\r", "");
     }
 }
