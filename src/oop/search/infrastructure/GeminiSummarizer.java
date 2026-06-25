@@ -44,17 +44,26 @@ public class GeminiSummarizer extends AbstractHttpClient {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
 
+            if (response.statusCode() != 200) {
+                System.err.println("[Gemini API 에러] 상태 코드: " + response.statusCode());
+                System.err.println("[Gemini API 응답]: " + body);
+                return "";
+            }
+
             // 순수 자바(Vanilla Java) 환경이므로 외부 JSON 라이브러리(Gson 등) 없이 직접 문자열 파싱
-            String marker = "\"text\": \"";
-            int start = body.indexOf(marker);
-            if (start != -1) {
-                start += marker.length();
-                // 요약 문장이 끝나는 닫는 큰따옴표 찾기
-                int end = body.indexOf("\"", start);
-                String result = body.substring(start, end);
-                
-                // JSON에서 전달된 이스케이프 줄바꿈(\\n)을 실제 줄바꿈(\n)으로 복구
-                return result.replace("\\n", "\n").replace("\\'", "'").trim();
+            // "text": " 또는 "text":" 와 같이 공백이 다를 수 있으므로 정규식 split 사용
+            String[] splitByText = body.split("\"text\"\\s*:\\s*\"");
+            if (splitByText.length > 1) {
+                String afterText = splitByText[1];
+                // 값이 끝나는 닫는 큰따옴표 찾기 (단, \" 처럼 이스케이프된 따옴표는 무시)
+                String[] textParts = afterText.split("(?<!\\\\)\"");
+                if (textParts.length > 0) {
+                    String result = textParts[0];
+                    // JSON에서 전달된 이스케이프 줄바꿈(\\n)과 이스케이프 따옴표(\\\")를 실제 문자로 복구
+                    return result.replace("\\n", "\n").replace("\\\"", "\"").replace("\\'", "'").trim();
+                }
+            } else {
+                System.err.println("[Gemini 파싱 실패] 예상된 JSON 구조가 아닙니다. 응답 바디: " + body);
             }
         } catch (Exception e) {
             System.err.println("Gemini AI 요약 중 에러 발생: " + e.getMessage());
