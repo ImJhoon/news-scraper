@@ -33,12 +33,14 @@ public class ConsoleNewsPublisher implements NewsPublisher {
                 "창억떡 맛있다",
                 "창억떡 먹어봤니?",
                 "https://naver.com",
-                "2026.12.32"
+                "2026.12.32",
+                ""
         ), new NewsResult(
                 "창억떡 무봤나",
                 "창억떡 직이네...",
                 "https://naver2.com",
-                "2026.12.33"
+                "2026.12.33",
+                ""
         )));
     }
 }

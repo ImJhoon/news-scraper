@@ -13,5 +13,6 @@ public record NewsResult(
         String title,
         String description,
         String url,
-        String pubDate
+        String pubDate,
+        String imageUrl
 ) {}

@@ -80,9 +80,14 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
                 String link = cutText(item, "\"link\":\"", "\",");
                 String description = cutText(item, "\"description\":\"", "\",");
                 String pubDate = "";
-//                System.out.println("title = " + title);
-//                System.out.println("description = " + description);
-                NewsResult result = new NewsResult(title, description, link, pubDate);
+                
+                // JSON에서 URL의 \/ 를 / 로 이스케이프 해제
+                String cleanLink = link.replace("\\/", "/");
+                
+                // 기사 원문에 접속하여 OG Image 태그 썸네일 추출
+                String imageUrl = extractOgImage(cleanLink);
+
+                NewsResult result = new NewsResult(title, description, cleanLink, pubDate, imageUrl);
                 results.add(result);
             }
             
@@ -98,6 +103,29 @@ public class NaverNewsProvider extends AbstractHttpClient implements NewsProvide
         return original
                 .split(prefix)[1]
                 .split(suffix)[0];
+    }
+
+    private String extractOgImage(String articleUrl) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(articleUrl))
+                    .header("User-Agent", "Mozilla/5.0") // 봇 차단 방지
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            String html = response.body();
+            
+            // <meta property="og:image" content="..."> 찾기
+            if (html.contains("og:image")) {
+                String ogImagePart = html.split("og:image")[1];
+                if (ogImagePart.contains("content=\"")) {
+                    return ogImagePart.split("content=\"")[1].split("\"")[0];
+                }
+            }
+        } catch (Exception e) {
+            // 통신 실패나 파싱 에러 시 빈 문자열 반환 (썸네일 없이 진행)
+        }
+        return "";
     }
 
     public static void main(String[] args) {

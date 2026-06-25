@@ -35,8 +35,12 @@ public class GitHubNewsPublisher extends AbstractHttpClient implements NewsPubli
         for (NewsResult result : newsResults) {
             String title = cleanTextForJson(result.title());
             String desc = cleanTextForJson(result.description());
+            String imgUrl = result.imageUrl();
             
             bodyBuilder.append(String.format("### %d. %s\\n", index++, title));
+            if (imgUrl != null && !imgUrl.isEmpty()) {
+                bodyBuilder.append(String.format("> ![썸네일](%s)\\n> \\n", imgUrl));
+            }
             bodyBuilder.append(String.format("> %s\\n> \\n", desc));
             bodyBuilder.append(String.format("> 👉 **[기사 원문 보러가기](%s)**\\n\\n", result.url()));
             bodyBuilder.append("---\\n\\n");
