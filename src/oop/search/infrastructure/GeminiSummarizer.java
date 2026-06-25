@@ -8,8 +8,8 @@ public class GeminiSummarizer extends AbstractHttpClient {
     private final String apiKey;
 
     public GeminiSummarizer() {
-        // Gemini 1.5 Flash 모델 엔드포인트
-        super("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent");
+        // Gemini 3.1 Flash Lite 모델 엔드포인트
+        super("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent");
         this.apiKey = System.getenv("GEMINI_API_KEY");
     }
 
