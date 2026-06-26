@@ -2,7 +2,7 @@ name: 네이버 뉴스 스크래퍼
 
 on:
   schedule:
-    - cron: '42 * * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 concurrency:
